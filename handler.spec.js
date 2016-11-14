@@ -39,11 +39,11 @@ describe("Handler", function() {
   let o;
   beforeEach(function(){
     o = new handler(event, context, callback);
-    // spyOn(o,"write").andCallFake(function(){
-    //   return new Promise(function(resolve, reject){
-    //     resolve(true);
-    //   })
-    // });
+    spyOn(o,"write").andCallFake(function(){
+      return new Promise(function(resolve, reject){
+        resolve(true);
+      })
+    });
 
 
   })

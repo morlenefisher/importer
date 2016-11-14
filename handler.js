@@ -182,9 +182,8 @@ class Importer {
                 TableName: this.table,
                 Item: data
             };
-            console.log("Adding a new item..." + params.TableName);
             return new Promise(function(resolve, reject) {
-              console.trace();
+              console.log("Adding a new item to " + params.TableName);
               lucilla.getClient().put(params).promise()
                     .then(function(data) {
                         resolve(data);
