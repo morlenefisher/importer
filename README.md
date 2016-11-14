@@ -1,4 +1,4 @@
-# digitalxlabs-importer [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer)
+# digitalxlabs-importer [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer) [![CircleCI](https://circleci.com/gh/digitalXlabs/importer/tree/master.svg?style=shield)](https://circleci.com/gh/digitalXlabs/importer/tree/master)
 
 Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) using [AWS Lambda](https://aws.amazon.com/lambda), and [Serverless](https://serverless.com/)
 
