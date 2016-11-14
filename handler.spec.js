@@ -12,8 +12,8 @@ let event = {
     "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
     "title": "Richardson"
   }],
-  "table": "testtable",
-  "source": "import",
+  "table": "imported",
+  "source": "local",
   "destination": "db"
 }
 
@@ -39,11 +39,11 @@ describe("Handler", function() {
   let o;
   beforeEach(function(){
     o = new handler(event, context, callback);
-    spyOn(o,"write").andCallFake(function(){
-      return new Promise(function(resolve, reject){
-        resolve(true);
-      })
-    });
+    // spyOn(o,"write").andCallFake(function(){
+    //   return new Promise(function(resolve, reject){
+    //     resolve(true);
+    //   })
+    // });
 
 
   })

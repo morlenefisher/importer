@@ -99,7 +99,7 @@ class Importer {
       if (this.source === 'local'){
         let fs = require('fs');
         let file = fs.readFileSync(process.cwd() + "/sample.event.json");
-        if (typeof file === 'undefined') throw new Error('Cannot find the schema file');
+        if (typeof file === 'undefined') throw new Error('Cannot find the data file');
         this.data = JSON.parse(file);
       }
       else {
@@ -238,5 +238,9 @@ class Importer {
 module.exports = Importer;
 module.exports.importer = (event, context, callback) => {
     let doIt = new Importer(event, context);
+    doIt.setSource();
+    doIt.setTable();
+    doIt.getSchema();
+    doIt.getData();
     doIt.create();
 };
