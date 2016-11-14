@@ -84,7 +84,7 @@ class Importer {
      */
     getSchema() {
         let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/schema.json");
+        let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
         if (typeof file === 'undefined') throw new Error('Cannot find the schema file');
         this.schema = JSON.parse(file);
     }
@@ -98,7 +98,7 @@ class Importer {
     getData() {
       if (this.source === 'local'){
         let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/event.json");
+        let file = fs.readFileSync(process.cwd() + "/sample.event.json");
         if (typeof file === 'undefined') throw new Error('Cannot find the schema file');
         this.data = JSON.parse(file);
       }

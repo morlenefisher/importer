@@ -1,8 +1,32 @@
 # digitalxlabs-importer [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer)
 
-Import data from json source to dynamodb
+Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) using [AWS Lambda](https://aws.amazon.com/lambda), and [Serverless](https://serverless.com/)
 
-## How To
+## Files
+ - handler.js: Contains the class and module to do the importing
+ - handler.spec.js: Test script
+ - jsdoc.json: Configuration for [JSDoc](http://usejsdoc.org)
+ - package.json: Package.json files detailing dependencies for this project and License info etc.
+ - sample.create.table.js: script to create dynamodb table
+ - sample.event,json: Contains a test dataset that will validate against the included Schema
+ - sample.schema,json: Sample JSON schema against which the dataset will be validated
+ - serverless.yml: Serverless configuration file, detailing resources, handlers and everything needed to get your lamda script up to AWS
+
+
+## Prerequisites
+
+ - AWS account, you will need this to actually store the lamda script and it's where dynamodb is as well
+ - You will need to create the table that is to store the data
+ - Serverless will need to be installed on your machine, if you want to use it's awesome features.
+ - AWS access key and secret (generate this is the IAM service section and use this with serverless to deploy the code)
+
+## Install (Quickie)
+
+- `npm install -g serverless` (if you don't already have it installed)
+- `git clone git@github.com:digitalXlabs/importer.git`
+- `npm install --production`
+- `serverless deploy`
+
 
 ## Tests
 
