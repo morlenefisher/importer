@@ -178,7 +178,7 @@ class Importer {
      * @param  {object} data the record
      * @return {promise}      promise results or error
      */
-    dbWrite(data) {
+    write(data) {
             let lucilla = this;
             let params = {
                 TableName: this.table,

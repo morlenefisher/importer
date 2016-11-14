@@ -1,0 +1,34 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc", "closure"]
+    },
+    "source": {
+        "exclude": [
+            "node_modules"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [],
+    "opts": {
+        "destination": "./docs",
+        "template": "./node_modules/ink-docstrap/template",
+        "recurse": true
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false,
+        "default": {
+            "outputSourceFiles": true
+        },
+        "systemName": "Importer",
+        "copyright": "Copyright © 2016 Ashley Lawrence Ltd",
+        "navType": "vertical",
+        "theme": "sandstone",
+        "linenums": true,
+        "collapseSymbols": false,
+        "inverseNav": true
+    }
+
+}
