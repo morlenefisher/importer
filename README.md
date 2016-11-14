@@ -2,7 +2,7 @@
 
 Import data from json source to dynamodb
 
-
+## How To
 
 ## Tests
 
