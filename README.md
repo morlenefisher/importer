@@ -10,7 +10,7 @@ Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) 
  - sample.create.table.js: script to create dynamodb table
  - sample.event,json: Contains a test dataset that will validate against the included Schema
  - sample.schema,json: Sample JSON schema against which the dataset will be validated
- - serverless.yml: Serverless configuration file, detailing resources, handlers and everything needed to get your lamda script up to AWS
+ - serverless.yml: Serverless configuration file, detailing resources, handlers and everything needed to get your lambda script up to AWS
 
 
 ## Prerequisites

@@ -2,7 +2,7 @@ var AWS = require("aws-sdk");
 
 AWS.config.update({
   region: "eu-west-1",
-  endpoint: "http://localhost:80440"
+  endpoint: "http://localhost:8044"
 });
 
 var dynamodb = new AWS.DynamoDB();
@@ -14,7 +14,7 @@ var params = {
         { AttributeName: "title", KeyType: "RANGE" }  //Sort key
     ],
     AttributeDefinitions: [
-        { AttributeName: "uuis", AttributeType: "S" },
+        { AttributeName: "uuid", AttributeType: "S" },
         { AttributeName: "title", AttributeType: "S" }
     ],
     ProvisionedThroughput: {
