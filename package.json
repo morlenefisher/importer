@@ -1,0 +1,31 @@
+{
+  "name": "digitalxlabs-importer",
+  "version": "0.0.2",
+  "description": "Import data from json source to dynamodb",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitalXlabs/importer"
+  },
+  "private": true,
+  "scripts": {
+    "test": "jasmine-node ./ --color"
+  },
+  "author": {
+    "name": "Morlene Fisher",
+    "email": "digital@ashleylawrence.com",
+    "url": "http://digital.ashleylawrence.com"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.3"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.6.7",
+    "ink-docstrap": "^1.3.0",
+    "jasmine-node": "^1.14.5"
+  },
+  "dependencies": {
+    "json-schema-remote": "^1.1.1",
+    "uuid": "^2.0.3"
+  }
+}
