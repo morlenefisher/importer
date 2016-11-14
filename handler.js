@@ -159,7 +159,7 @@ class Importer {
             let mapped = quintus.map(item);
             quintus.validate(mapped, quintus.schema)
                 .then(function() {
-                    return quintus.dbWrite(item)
+                    return quintus.write(item)
                 })
                 .then(function(res) {
                     return quintus.successCallback(res)
