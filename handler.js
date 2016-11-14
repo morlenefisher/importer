@@ -144,8 +144,6 @@ class Importer {
           data[k] = item[k];
         }
       });
-
-      console.log(data);
       return data;
     }
     /**
@@ -186,7 +184,8 @@ class Importer {
             };
             console.log("Adding a new item..." + params.TableName);
             return new Promise(function(resolve, reject) {
-                lucilla.getClient().put(params).promise()
+              console.trace();
+              lucilla.getClient().put(params).promise()
                     .then(function(data) {
                         resolve(data);
                     })

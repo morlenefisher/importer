@@ -39,7 +39,13 @@ describe("Handler", function() {
   let o;
   beforeEach(function(){
     o = new handler(event, context, callback);
-    spyOn(o,"dbWrite").andReturn(true);
+    spyOn(o,"write").andCallFake(function(){
+      return new Promise(function(resolve, reject){
+        resolve(true);
+      })
+    });
+
+
   })
 
   it('can instantiate class with params', function() {
@@ -53,7 +59,7 @@ describe("Handler", function() {
       expect(o.callback).toMatch(callback);
   })
 
-  it('can set the data', function(){
+  it('can set the data', function(done){
     o.getData();
     expect(o.data).toBeDefined();
     o.setTable();
@@ -66,5 +72,6 @@ describe("Handler", function() {
     expect(o.destination).toBeDefined();
 
     o.create();
+    done();
   })
 })
