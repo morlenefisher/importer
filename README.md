@@ -43,7 +43,7 @@ npm test
 ## Dev Dependencies
 
 - [aws-sdk](https://github.com/aws/aws-sdk-js): AWS SDK for JavaScript
-- [ink-docstrap](https://github.com/docstrap/docstrap): [![NPM](https://nodei.co/npm/ink-docstrap.png?downloads=true)](https://nodei.co/npm/ink-docstrap/)
+- [ink-docstrap](https://github.com/docstrap/docstrap): DocStrap is Bootstrap based template for JSDoc3
 - [jasmine-node](https://github.com/mhevery/jasmine-node): DOM-less simple JavaScript BDD testing framework for Node
 
 
