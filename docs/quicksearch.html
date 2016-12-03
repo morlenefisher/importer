@@ -1,0 +1,31 @@
+<html>
+<head>
+</head>
+<body style="background: transparent;">
+    <script src="scripts/docstrap.lib.js"></script>
+    <script src="scripts/lunr.min.js"></script>
+    <script src="scripts/fulltext-search.js"></script>
+
+    <script type="text/x-docstrap-searchdb">
+    {"classes.list.html":{"id":"classes.list.html","title":"Classes","body":" Importer Classes ImporterImporterCSV Classes Classes Importer ImporterCSV × Search results Close "},"index.html":{"id":"index.html","title":"Index","body":" Importer Classes ImporterImporterCSV × Search results Close "},"Importer.html":{"id":"Importer.html","title":"Class: Importer","body":" Importer Classes ImporterImporterCSV Class: Importer Importer new Importer(event, context, callback) constructor - class constructor Creates class properties from the event, context and callback passed in parameters Parameters: Name Type Description event object description context object description callback function description Returns: Type void Methods create() creates a record Returns: description Type type errorCallback() sets up the error response object Returns: description Type type getClient() getSQSHandler - description Returns: description Type type getData() getData - retrieves the data from the source if it's a file or calls the setter Returns: description Type type getSchema() getSchema - description Returns: description Type type map() map - maps data properties to the schema properties Returns: description Type type setData() setData - sets the data to a class property Returns: description Type type setDestination() setDestination - this is the destination of the data usually this is your db Returns: description Type type setSource() setSource - The source is the souce of the data Returns: description Type type setTable() setTable - Sets the name of the data table Returns: description Type type successCallback() sets up the success response object Returns: description Type type validate(data, schema) validate - validates an object against the given schema Parameters: Name Type Description data object data object schema string schema or url of the schema to use Returns: description Type type write(data) write - writes the data to the data store ideally this would go in DAL as doubtless you'll need it elsewhere Parameters: Name Type Description data object the record Returns: promise results or error Type promise × Search results Close "},"ImporterCSV.html":{"id":"ImporterCSV.html","title":"Class: ImporterCSV","body":" Importer Classes ImporterImporterCSV Class: ImporterCSV ImporterCSV new ImporterCSV(event, context, callback) constructor - class constructor Creates class properties from the event, context and callback passed in parameters Parameters: Name Type Description event object description context object description callback function description Returns: Type void Methods create() creates a record Returns: description Type type errorCallback() sets up the error response object Returns: description Type type getClient() getSQSHandler - description Returns: description Type type getData() getData - retrieves the data from the source if it's a file or calls the setter Returns: description Type type getSchema() getSchema - description Returns: description Type type map() map - maps data properties to the schema properties Returns: description Type type setData() setData - sets the data to a class property Returns: description Type type setDestination() setDestination - this is the destination of the data usually this is your db Returns: description Type type setSource() setSource - The source is the souce of the data Returns: description Type type setTable() setTable - Sets the name of the data table Returns: description Type type successCallback() sets up the success response object Returns: description Type type validate(data, schema) validate - validates an object against the given schema Parameters: Name Type Description data object data object schema string schema or url of the schema to use Returns: description Type type write(data) write - writes the data to the data store ideally this would go in DAL as doubtless you'll need it elsewhere Parameters: Name Type Description data object the record Returns: promise results or error Type promise × Search results Close "}}
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            Searcher.init();
+        });
+
+        $(window).on("message", function(msg) {
+            var msgData = msg.originalEvent.data;
+
+            if (msgData.msgid != "docstrap.quicksearch.start") {
+                return;
+            }
+
+            var results = Searcher.search(msgData.searchTerms);
+
+            window.parent.postMessage({"results": results, "msgid": "docstrap.quicksearch.done"}, "*");
+        });
+    </script>
+</body>
+</html>

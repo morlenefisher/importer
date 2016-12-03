@@ -4,7 +4,7 @@ var fs = require('fs');
 let file = fs.readFileSync(process.cwd() + "/sample.csv");
 if (typeof file === 'undefined') throw new Error('Cannot find the data file');
 
-let sfile = fs.readFileSync(process.cwd() + "/db.schema.json");
+let sfile = fs.readFileSync(process.cwd() + "/dp.schema.json");
 if (typeof sfile === 'undefined') throw new Error('Cannot find the schema file');
 let schema = JSON.parse(sfile);
 
