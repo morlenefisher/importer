@@ -112,8 +112,6 @@ class Importer {
                 resolve(that.data = JSON.parse(file));
             }
             else {
-                console.trace();
-                 console.log(that.event);
 
                 if (typeof that.event.body === 'undefined' ) {
                     reject('there is no body');
@@ -170,21 +168,44 @@ class Importer {
      */
     create() {
         let quintus = this;
+        let nv = [];
+        let errs = [];
         this.data.forEach(function (item, index) {
             let mapped = quintus.map(item);
             quintus.validate(mapped, quintus.schema)
-                .then(function () {
-                    return quintus.write(item)
+                .then(quintus.write(item))
+                .catch(function(err){
+                    nv.push(item);
+                    errs.push(err);
                 })
-                .then(function (res) {
-                    return quintus.successCallback(res)
-                })
-                .catch((err) => {
-                    return quintus.errorCallback(err)
-                });
+        })
+
+        return new Promise(function(resolve, reject){
+            if (errs.length === 0){
+                resolve(true);
+            }
+            else {
+                reject(errs);
+            }
         })
     }
 
+// create() {
+//         let quintus = this;
+//         this.data.forEach(function (item, index) {
+//             let mapped = quintus.map(item);
+//             quintus.validate(mapped, quintus.schema)
+//                 .then(function () {
+//                     return quintus.write(item)
+//                 })
+//                 // .then(function (res) {
+//                 //     return quintus.successCallback(res)
+//                 // })
+//                 // .catch((err) => {
+//                 //     return quintus.errorCallback(err)
+//                 // });
+//         })
+//     }
 
     /**
      * write - writes the data to the data store

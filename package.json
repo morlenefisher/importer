@@ -11,9 +11,9 @@
   },
   "private": true,
   "scripts": {
-    "test": "jasmine-node ./ --verbose ",
+    "test": "jasmine  --verbose ",
     "docs": "jsdoc -c conf.json .",
-    "cover": "istanbul cover jasmine-node --  ./"
+    "cover": "istanbul cover jasmine --  "
   },
   "author": {
     "name": "Morlene Fisher",
@@ -27,11 +27,11 @@
   "devDependencies": {
     "ink-docstrap": "^1.3.0",
     "istanbul": "^0.4.5",
-    "jasmine-node": "2.0.0"
+    "jasmine": "^2.5.2"
   },
   "dependencies": {
-    "commander": "^2.9.0",
     "aws-sdk": "2.7.10",
+    "commander": "^2.9.0",
     "csv": "^1.1.0",
     "json-schema-remote": "^1.1.1",
     "uuid": "^2.0.3"
