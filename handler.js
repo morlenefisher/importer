@@ -19,7 +19,6 @@ class Importer {
         this.event = event;
         this.context = context;
         this.callback = callback;
-
     }
 
 
@@ -29,29 +28,17 @@ class Importer {
      * @return {type}  description
      */
     setSource() {
-        this.source = this.event.source;
+        let that = this;
+
+        return new Promise(function (resolve, reject) {
+            if (typeof that.event.source === 'undefined') {
+                reject('there is no source');
+            }
+
+            resolve(that.source = that.event.source);
+        })
+
     }
-
-
-    /**
-     * setDestination - this is the destination of the data usually this is your db
-     *
-     * @return {type}  description
-     */
-    setDestination() {
-        this.destination = this.event.destination;
-    }
-
-
-    /**
-     * setData - sets the data to a class property
-     *
-     * @return {type}  description
-     */
-    setData() {
-        this.data = this.event.body;
-    }
-
 
     /**
      * setTable - Sets the name of the data table
@@ -59,7 +46,14 @@ class Importer {
      * @return {type}  description
      */
     setTable() {
-        this.table = this.event.table;
+        let that = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof that.event.table === 'undefined') {
+                reject('there is no table');
+            }
+
+            resolve(that.table = that.event.table);
+        })
     }
 
     /**
@@ -75,6 +69,7 @@ class Importer {
         });
 
         return new AWS.DynamoDB.DocumentClient();
+
     }
 
     /**
@@ -83,28 +78,51 @@ class Importer {
      * @return {type}  description
      */
     getSchema() {
+        let that = this;
         let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
-        if (typeof file === 'undefined') throw new Error('Cannot find the schema file');
-        this.schema = JSON.parse(file);
+        return new Promise(function (resolve, reject) {
+            if (typeof that.event.schema === 'undefined') {
+                reject('there is no schema');
+            }
+
+            let file = fs.readFileSync(process.cwd() + "/" + that.event.schema);
+            if (typeof file === 'undefined') {
+                reject('Cannot read the schema file');
+            } else {
+                resolve(that.schema = JSON.parse(file));
+            }
+        })
     }
 
 
     /**
-     * getData - retrieves the data from the source if it's a file or calls the setter
+     * getData - retrieves the data from the source if it's a file or from the event.body
      *
      * @return {type}  description
      */
     getData() {
-      if (this.source === 'local'){
-        let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/sample.event.json");
-        if (typeof file === 'undefined') throw new Error('Cannot find the data file');
-        this.data = JSON.parse(file);
-      }
-      else {
-        this.setData();
-      }
+        let that = this;
+        return new Promise(function (resolve, reject) {
+            if (typeof that.source !== 'undefined') {
+                let fs = require('fs');
+                let file = fs.readFileSync(process.cwd() + '/' + that.source);
+                if (typeof file === 'undefined') {
+                    reject(new Error('Cannot find the data file'));
+                }
+                resolve(that.data = JSON.parse(file));
+            }
+            else {
+                console.trace();
+                 console.log(that.event);
+
+                if (typeof that.event.body === 'undefined' ) {
+                    reject('there is no body');
+                }
+
+                resolve(that.data = that.event.body);
+            }
+
+        })
     }
 
 
@@ -117,12 +135,12 @@ class Importer {
      */
     validate(data, schema) {
         let validator = require('json-schema-remote');
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             validator.validate(data, schema)
-                .then(function() {
+                .then(function () {
                     resolve(true);
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     reject(error);
                 });
         })
@@ -134,16 +152,16 @@ class Importer {
      *
      * @return {type}  description
      */
-    map(item){
-      let data = {};
+    map(item) {
+        let data = {};
 
-      let schema_props = Object.keys(this.schema.properties);
-      schema_props.forEach(function(k, idx){
-        if (typeof item[k] !== 'undefined'){
-          data[k] = item[k];
-        }
-      });
-      return data;
+        let schema_props = Object.keys(this.schema.properties);
+        schema_props.forEach(function (k, idx) {
+            if (typeof item[k] !== 'undefined') {
+                data[k] = item[k];
+            }
+        });
+        return data;
     }
     /**
      * creates a record
@@ -152,13 +170,13 @@ class Importer {
      */
     create() {
         let quintus = this;
-        this.data.forEach(function(item, index) {
+        this.data.forEach(function (item, index) {
             let mapped = quintus.map(item);
             quintus.validate(mapped, quintus.schema)
-                .then(function() {
+                .then(function () {
                     return quintus.write(item)
                 })
-                .then(function(res) {
+                .then(function (res) {
                     return quintus.successCallback(res)
                 })
                 .catch((err) => {
@@ -176,23 +194,23 @@ class Importer {
      * @return {promise}      promise results or error
      */
     write(data) {
-            let lucilla = this;
-            let params = {
-                TableName: this.table,
-                Item: data
-            };
-            return new Promise(function(resolve, reject) {
-              console.log("Adding a new item to " + params.TableName);
-              lucilla.getClient().put(params).promise()
-                    .then(function(data) {
-                        resolve(data);
-                    })
-                    .catch(function(err) {
-                        reject(err);
-                    })
-            })
+        let lucilla = this;
+        let params = {
+            TableName: this.table,
+            Item: data
+        };
+        return new Promise(function (resolve, reject) {
+            console.log("Adding a new item to " + params.TableName);
+            lucilla.getClient().put(params).promise()
+                .then(function (data) {
+                    resolve(data);
+                })
+                .catch(function (err) {
+                    reject(err);
+                })
+        })
 
-        } // write
+    } // write
 
 
 
@@ -209,7 +227,6 @@ class Importer {
             },
             body: JSON.stringify(err),
         }
-        console.log(err);
         this.context.fail(this.responseError);
 
     }
@@ -231,14 +248,39 @@ class Importer {
         this.context.succeed(this.responseSuccess);
 
     }
+
+    run() {
+        this.setSource()
+            .then(this.setTable)
+            .then(this.getSchema)
+            .then(this.getData)
+
+            .then(this.create)
+            .catch(this.errorCallback)
+    }
 }
 
 module.exports = Importer;
 module.exports.importer = (event, context, callback) => {
     let doIt = new Importer(event, context);
-    doIt.setSource();
-    doIt.setTable();
-    doIt.getSchema();
-    doIt.getData();
-    doIt.create();
+    doIt.run();
+
+
+    //  doIt.setSource()
+    // .then(function(source) {
+    //     return doIt.setTable();
+    // })
+    // .then(function(table) {
+    //     return doIt.getSchema();
+    // })
+    // .then(doIt.getData)
+    // // .then(function(schema) {
+    // //     return doIt.getData();
+    // // })
+    // .then(function(data) {
+    //     return doIt.create();
+    // })
+    // .catch(function(err) {
+    //     return err;
+    // })
 };

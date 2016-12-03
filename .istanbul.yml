@@ -1,0 +1,12 @@
+
+
+instrumentation:
+    extensions:
+        - .js
+    excludes: ["**/*.spec.js"]
+reporting:
+    print: detail
+    reports:
+        - lcov
+    dir: ./coverage
+

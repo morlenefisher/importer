@@ -1,0 +1,7 @@
+{
+    "source": "sample.json",
+    "table": "testone",
+    "location": "local",
+    "schema": "dp.schema.json"
+
+}

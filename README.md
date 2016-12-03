@@ -2,6 +2,31 @@
 
 Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) using [AWS Lambda](https://aws.amazon.com/lambda), and [Serverless](https://serverless.com/)
 
+## Usage
+
+### Use case 1
+
+Convert a local CSV data file to JSON using a JSON Schema document to determine 
+the property names of the json object.
+
+```
+convert -i example.csv -s example.schema.json -d example.json
+```
+You will have the converted JSON data file at the location you chose.
+
+### Use case 2
+
+Convert a local CSV data file to JSON using a JSON Schema document to determine 
+the property names of the json object and upload the file to an AWS S3 bucket
+
+You will need to ensure your AWS Profile has been set in your bash. The profile being read
+is taken from your ~/.aws/credentials file.
+
+```
+export AWS_PROFILE=my_aws_profile
+convert -i example.csv -s example.schema.json -d example.json -u my_awss3_bucket
+```
+
 ## Files
  - handler.js: Contains the class and module to do the importing
  - handler.spec.js: Test script
@@ -27,6 +52,9 @@ Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) 
 - `npm install --production`
 - `serverless deploy`
 
+## Usage
+
+### Converting CSV to JSON and importing
 
 ## Tests
 

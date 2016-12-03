@@ -75,7 +75,7 @@
             "minimum": 1,
             "maximum": 7,
             "enum": ["B", "Z"],
-            "description": "1 = Private Doctor            2 = Private Nurse            3 = Private Pharmacist            4 = Private Optometrist            5 = Private Physiotherapist            6 = Private Radiographer            7 = Private Podiatrist "
+            "description": "1 = Private Doctor  2 = Private Nurse   3 = Private Pharmacist            4 = Private Optometrist            5 = Private Physiotherapist            6 = Private Radiographer            7 = Private Podiatrist "
         },
         "parentOrganisationCode": {
             "description": "Code of responsible PCO (this may not be geographically linked to the PCDP)",
