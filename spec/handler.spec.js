@@ -337,7 +337,7 @@ describe('Validate', function () {
 describe('Map', function () {
 
     let o;
-            let fs = require('fs');
+    let fs = require('fs');
 
     beforeEach(function () {
         o = new handler(event, context, callback);
@@ -355,7 +355,7 @@ describe('Map', function () {
             "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
             "title": "Richardson"
         }];
-        
+
         let mapped = o.map(data);
         expect(mapped).toBeDefined();
     })
@@ -365,7 +365,7 @@ describe('Map', function () {
 describe('Create', function () {
 
     let o;
-            let fs = require('fs');
+    let fs = require('fs');
 
     beforeEach(function () {
         o = new handler(event, context, callback);

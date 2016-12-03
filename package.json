@@ -1,5 +1,5 @@
 {
-  "name": "digitalxlabs-importer",
+  "name": "ngest-csv2json",
   "version": "0.0.3",
   "description": "Import data from json source to dynamodb",
   "repository": {

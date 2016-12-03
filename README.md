@@ -1,6 +1,29 @@
-# digitalxlabs-importer [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer) [![CircleCI](https://circleci.com/gh/digitalXlabs/importer/tree/master.svg?style=shield)](https://circleci.com/gh/digitalXlabs/importer/tree/master)
+# ngest-csv2json [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer) [![CircleCI](https://circleci.com/gh/digitalXlabs/importer/tree/master.svg?style=shield)](https://circleci.com/gh/digitalXlabs/importer/tree/master)
 
 Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) using [AWS Lambda](https://aws.amazon.com/lambda), and [Serverless](https://serverless.com/)
+
+## Install (Quickie)
+
+```
+git clone git@github.com:digitalXlabs/importer.git
+npm install ngest-importer
+```
+
+### Command line Usage
+
+```
+npm install ngest-importer -g
+
+Usage: convert [options] <file>
+
+  Options:
+
+    -h, --help                          output usage information
+    -i, --input <datafilepath>          The input csv data file
+    -s, --schema <schemafilepath>       The JSON schema file path
+    -d, --destination <outputfilepath>  The output file path
+    -u, --upload <s3bucket>             The name of the s3 bucket to upload the file
+```
 
 ## Usage
 
@@ -45,16 +68,6 @@ convert -i example.csv -s example.schema.json -d example.json -u my_awss3_bucket
  - Serverless will need to be installed on your machine, if you want to use it's awesome features.
  - AWS access key and secret (generate this is the IAM service section and use this with serverless to deploy the code)
 
-## Install (Quickie)
-
-- `npm install -g serverless` (if you don't already have it installed)
-- `git clone git@github.com:digitalXlabs/importer.git`
-- `npm install --production`
-- `serverless deploy`
-
-## Usage
-
-### Converting CSV to JSON and importing
 
 ## Tests
 
