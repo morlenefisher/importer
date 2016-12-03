@@ -1,6 +1,6 @@
 'use strict'
 
-let handler = require('./handler');
+let handler = require('./handler.csv');
 
 let event = {
   "body" : [{
@@ -12,7 +12,7 @@ let event = {
     "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
     "title": "Richardson"
   }],
-  "table": "testone",
+  "table": "testcsvone",
   "source": "local",
   "destination": "db"
 }

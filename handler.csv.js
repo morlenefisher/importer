@@ -1,7 +1,7 @@
 'use strict';
 
 
-class Importer {
+class ImporterCSV {
 
 
     /**
@@ -49,7 +49,12 @@ class Importer {
      * @return {type}  description
      */
     setData() {
-        this.data = this.event.body;
+
+        return new Promise(function(resolve, reject) {
+            if (!this.event.body) reject('No table specified');
+            this.data = this.event.body;
+            resolve(this.data);
+        })
     }
 
 
@@ -59,7 +64,11 @@ class Importer {
      * @return {type}  description
      */
     setTable() {
-        this.table = this.event.table;
+        return new Promise(function(resolve, reject) {
+            if (!this.event.table) reject('No table specified');
+            this.table = this.event.table;
+            resolve(this.table);
+        })
     }
 
     /**
@@ -83,10 +92,14 @@ class Importer {
      * @return {type}  description
      */
     getSchema() {
-        let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
-        if (typeof file === 'undefined') throw new Error('Cannot find the schema file');
-        this.schema = JSON.parse(file);
+        return new Promise(function(resolve, reject) {
+            let fs = require('fs');
+            let file = fs.readFileSync(process.cwd() + "/dp.schema.json");
+            if (typeof file === 'undefined') reject(new Error('Cannot find the schema file'));
+            this.schema = JSON.parse(file);
+            resolve(this.schema);
+        })
+
     }
 
 
@@ -96,15 +109,37 @@ class Importer {
      * @return {type}  description
      */
     getData() {
-      if (this.source === 'local'){
-        let fs = require('fs');
-        let file = fs.readFileSync(process.cwd() + "/sample.event.json");
-        if (typeof file === 'undefined') throw new Error('Cannot find the data file');
-        this.data = JSON.parse(file);
-      }
-      else {
-        this.setData();
-      }
+        let that = this;
+        return new Promise(function(resolve, reject) {
+            console.log('the source is ' + that.source);
+            if (that.source === 'local') {
+                console.log('source is local');
+
+                let parse = require('csv-parse');
+                let fs = require('fs');
+
+                let file = fs.readFileSync(process.cwd() + "/sample.event.csv");
+                if (typeof file === 'undefined') reject(new Error('Cannot find the data file'));
+
+                let schema_props = Object.keys(that.schema.properties);
+                if (typeof schema_props === 'undefined') reject(new Error('there is no schema'));
+
+                parse(file, {
+                    columns: schema_props
+                }, function(err, output) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    console.log(output);
+
+                    that.data = output; //console.log(output);
+                    resolve(that.data);
+                });
+            } else {
+                resolve(that.setData());
+            }
+        })
+
     }
 
 
@@ -134,17 +169,19 @@ class Importer {
      *
      * @return {type}  description
      */
-    map(item){
-      let data = {};
+    map(item) {
+        let data = {};
 
-      let schema_props = Object.keys(this.schema.properties);
-      schema_props.forEach(function(k, idx){
-        if (typeof item[k] !== 'undefined'){
-          data[k] = item[k];
-        }
-      });
-      return data;
+        let schema_props = Object.keys(this.schema.properties);
+        schema_props.forEach(function(k, idx) {
+            if (typeof item[k] !== 'undefined') {
+                data[k] = item[k];
+            }
+        });
+        return data;
     }
+
+
     /**
      * creates a record
      *
@@ -152,21 +189,33 @@ class Importer {
      */
     create() {
         let quintus = this;
-        this.data.forEach(function(item, index) {
-            let mapped = quintus.map(item);
-            quintus.validate(mapped, quintus.schema)
-                .then(function() {
-                    return quintus.write(item)
-                })
-                .then(function(res) {
-                    return quintus.successCallback(res)
-                })
-                .catch((err) => {
-                    return quintus.errorCallback(err)
-                });
-        })
-    }
 
+        this.setTable()
+            .then(function(table) {
+                console.log(table);
+                return quintus.getSchema();
+            })
+            .then(function(schema) {
+                console.log(schema);
+                return quintus.getData();
+            })
+            .then(function(data) {
+                console.log(data);
+                // data.forEach(function(item, index) {
+                //     quintus.validate(item, quintus.schema)
+                //         .then(function() {
+                //             return quintus.write(item)
+                //         })
+                //         .then(function(res) {
+                //             return quintus.successCallback(res)
+                //         })
+                //         .catch((err) => {
+                //             return quintus.errorCallback(err)
+                //         });
+                // })
+            })
+
+    }
 
     /**
      * write - writes the data to the data store
@@ -181,9 +230,10 @@ class Importer {
                 TableName: this.table,
                 Item: data
             };
+
             return new Promise(function(resolve, reject) {
-              console.log("Adding a new item to " + params.TableName);
-              lucilla.getClient().put(params).promise()
+                console.log("Adding a new item to " + params.TableName);
+                lucilla.getClient().put(params).promise()
                     .then(function(data) {
                         resolve(data);
                     })
@@ -233,12 +283,12 @@ class Importer {
     }
 }
 
-module.exports = Importer;
+//
+module.exports = ImporterCSV;
 module.exports.importer = (event, context, callback) => {
-    let doIt = new Importer(event, context);
-    doIt.setSource();
-    doIt.setTable();
-    doIt.getSchema();
-    doIt.getData();
+    let doIt = new ImporterCSV(event, context);
+
+    console.log(doIt);
+
     doIt.create();
 };

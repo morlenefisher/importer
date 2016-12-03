@@ -1,0 +1,113 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "http://mend.io/schemas/epcdp.json",
+    "title": "Epcdp: GP Practices",
+    "description": "Current Private Controlled Drug Prescribers in England.",
+    "type": "object",
+    "properties": {
+
+        "organisationCode": {
+            "description": "organisation code which is probably unique",
+            "type": "string",
+            "minLength": 6,
+            "maxLength": 6
+        },
+        "name": {
+            "description": "organisation name",
+            "type": "string",
+            "maxLength": 50
+        },
+        "nationalGrouping": {
+            "description": "organisation code which is probably unique",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+        },
+        "highLevelHealthGeography": {
+            "description": "organisation code which is probably unique",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+        },
+        "addressLine1": {
+            "description": "address line",
+            "type": "string",
+            "maxLength": 35
+        },
+        "addressLine2": {
+            "description": "address line",
+            "type": "string",
+            "maxLength": 35
+        },
+        "addressLine3": {
+            "description": "address line",
+            "type": "string",
+            "maxLength": 35
+        },
+        "addressLine4": {
+            "description": "address line",
+            "type": "string",
+            "maxLength": 35
+        },
+        "addressLine5": {
+            "description": "address line",
+            "type": "string",
+            "maxLength": 35
+        },
+        "postcode": {
+            "description": "postcode of the org",
+            "type": "string",
+            "maxLength": 8
+        },
+        "openDate": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "closeDate": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "empty1": {
+            "type": "null"
+        },
+        "organisationSubtypeCode": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 7,
+            "enum": ["B", "Z"],
+            "description": "1 = Private Doctor            2 = Private Nurse            3 = Private Pharmacist            4 = Private Optometrist            5 = Private Physiotherapist            6 = Private Radiographer            7 = Private Podiatrist "
+        },
+        "parentOrganisationCode": {
+            "description": "Code of responsible PCO (this may not be geographically linked to the PCDP)",
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3
+        },
+        "joinParentDate": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "leftParentDate": {
+            "type": "string",
+            "maxLength": 8
+        },
+        "contactTelephone": {
+            "type": "string",
+            "maxLength": 12
+        },
+        "empty2": {
+            "type": "null"
+        },
+        "empty3": {
+            "type": "null"
+        },
+        "empty4": {
+            "type": "null"
+        },
+        "ari": {
+            "type": "boolean",
+            "description": "Amended Record Indicator"
+        }
+    },
+    "required": ["uuid", "organisationCode", "name", "openDate", "postcode", "organisationSubtypeCode", "parentOrganisationCode", "joinParentDate", "ari"]
+}
