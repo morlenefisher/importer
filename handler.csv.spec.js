@@ -39,7 +39,7 @@ describe("Handler", function() {
   let o;
   beforeEach(function(){
     o = new handler(event, context, callback);
-    spyOn(o,"write").andCallFake(function(){
+    spyOn(o,"write").and.callFake(function(){
       return new Promise(function(resolve, reject){
         resolve(true);
       })

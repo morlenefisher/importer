@@ -8,7 +8,7 @@
   },
   "private": true,
   "scripts": {
-    "test": "jasmine-node ./ --color",
+    "test": "jasmine-node ./ --verbose",
     "docs": "jsdoc -c conf.json ."
   },
   "author": {
