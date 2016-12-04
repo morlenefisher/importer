@@ -30,7 +30,7 @@ class Importer {
     setSource() {
         let that = this;
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (typeof that.event.source === 'undefined') {
                 reject('there is no source');
             }
@@ -47,7 +47,7 @@ class Importer {
      */
     setTable() {
         let that = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (typeof that.event.table === 'undefined') {
                 reject('there is no table');
             }
@@ -80,7 +80,7 @@ class Importer {
     getSchema() {
         let that = this;
         let fs = require('fs');
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (typeof that.event.schema === 'undefined') {
                 reject('there is no schema');
             }
@@ -102,7 +102,7 @@ class Importer {
      */
     getData() {
         let that = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
             if (typeof that.source !== 'undefined') {
                 let fs = require('fs');
                 let file = fs.readFileSync(process.cwd() + '/' + that.source);
@@ -113,7 +113,7 @@ class Importer {
             }
             else {
 
-                if (typeof that.event.body === 'undefined' ) {
+                if (typeof that.event.body === 'undefined') {
                     reject('there is no body');
                 }
 
@@ -128,17 +128,17 @@ class Importer {
      * validate - validates an object against the given schema
      *
      * @param  {object} data   data object
-     * @param  {string} schema schema or url of the schema to use
      * @return {type}        description
      */
-    validate(data, schema) {
+    validate(data) {
+        let quintus = this;
         let validator = require('json-schema-remote');
-        return new Promise(function (resolve, reject) {
-            validator.validate(data, schema)
-                .then(function () {
-                    resolve(true);
+        return new Promise(function(resolve, reject) {
+            validator.validate(data, quintus.schema)
+                .then(function(res) {
+                    resolve(data);
                 })
-                .catch(function (error) {
+                .catch(function(error) {
                     reject(error);
                 });
         })
@@ -146,66 +146,17 @@ class Importer {
 
 
     /**
-     * map - maps data properties to the schema properties
-     *
-     * @return {type}  description
-     */
-    map(item) {
-        let data = {};
-
-        let schema_props = Object.keys(this.schema.properties);
-        schema_props.forEach(function (k, idx) {
-            if (typeof item[k] !== 'undefined') {
-                data[k] = item[k];
-            }
-        });
-        return data;
-    }
-    /**
      * creates a record
      *
      * @return {type}  description
      */
     create() {
-        let quintus = this;
-        let nv = [];
-        let errs = [];
-        this.data.forEach(function (item, index) {
-            let mapped = quintus.map(item);
-            quintus.validate(mapped, quintus.schema)
-                .then(quintus.write(item))
-                .catch(function(err){
-                    nv.push(item);
-                    errs.push(err);
-                })
-        })
 
-        return new Promise(function(resolve, reject){
-            if (errs.length === 0){
-                resolve(true);
-            }
-            else {
-                reject(errs);
-            }
-        })
+        let validated = this.data.map(this.validate, this);
+        return Promise.all(validated);
+
     }
 
-// create() {
-//         let quintus = this;
-//         this.data.forEach(function (item, index) {
-//             let mapped = quintus.map(item);
-//             quintus.validate(mapped, quintus.schema)
-//                 .then(function () {
-//                     return quintus.write(item)
-//                 })
-//                 // .then(function (res) {
-//                 //     return quintus.successCallback(res)
-//                 // })
-//                 // .catch((err) => {
-//                 //     return quintus.errorCallback(err)
-//                 // });
-//         })
-//     }
 
     /**
      * write - writes the data to the data store
@@ -220,13 +171,14 @@ class Importer {
             TableName: this.table,
             Item: data
         };
-        return new Promise(function (resolve, reject) {
-            console.log("Adding a new item to " + params.TableName);
-            lucilla.getClient().put(params).promise()
-                .then(function (data) {
+
+        return new Promise(function(resolve, reject) {
+            // console.log("Adding a new item to " + params.TableName);
+             lucilla.getClient().put(params).promise()
+                .then(function(data) {
                     resolve(data);
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     reject(err);
                 })
         })
@@ -277,6 +229,8 @@ class Importer {
             .then(this.getData)
 
             .then(this.create)
+            .then(this.write)
+            .then(this.successCallback)
             .catch(this.errorCallback)
     }
 }
@@ -285,23 +239,4 @@ module.exports = Importer;
 module.exports.importer = (event, context, callback) => {
     let doIt = new Importer(event, context);
     doIt.run();
-
-
-    //  doIt.setSource()
-    // .then(function(source) {
-    //     return doIt.setTable();
-    // })
-    // .then(function(table) {
-    //     return doIt.getSchema();
-    // })
-    // .then(doIt.getData)
-    // // .then(function(schema) {
-    // //     return doIt.getData();
-    // // })
-    // .then(function(data) {
-    //     return doIt.create();
-    // })
-    // .catch(function(err) {
-    //     return err;
-    // })
 };

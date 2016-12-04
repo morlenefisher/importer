@@ -9,6 +9,14 @@ git clone git@github.com:digitalXlabs/importer.git
 npm install ngest-importer
 ```
 
+
+## Usage
+
+### Use case 1
+
+Convert a local CSV data file to JSON using a JSON Schema document to determine 
+the property names of the json object, using the command line tool
+
 ### Command line Usage
 
 ```
@@ -25,12 +33,6 @@ Usage: convert [options] <file>
     -u, --upload <s3bucket>             The name of the s3 bucket to upload the file
 ```
 
-## Usage
-
-### Use case 1
-
-Convert a local CSV data file to JSON using a JSON Schema document to determine 
-the property names of the json object.
 
 ```
 convert -i example.csv -s example.schema.json -d example.json

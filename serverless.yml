@@ -34,9 +34,8 @@ custom:
     myStage: ${opt:stage, self:provider.stage}
 
 exclude:
-      - handler.spec.js
-      - event.json
-      - jsdoc.json
+   - exclude-me.py
+   - exclude-me-dir/**
 
 functions:
   create:
@@ -62,3 +61,8 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: 'imported'
+
+   S3BucketForConvertedFiles:
+     Type: AWS::S3::Bucket
+     Properties:
+       BucketName: ngest-csv2json-${opt:stage)-

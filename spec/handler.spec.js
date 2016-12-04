@@ -22,10 +22,10 @@ let event = {
 
 //
 let context = {
-    fail: function (msg) {
+    fail: function(msg) {
         expect(msg).toBeDefined();
     },
-    succeed: function (data) {
+    succeed: function(data) {
         expect(data).toBeDefined();
         expect(data.statusCode).toBeDefined();
         expect(data.statusCode).toEqual(200);
@@ -33,17 +33,17 @@ let context = {
 }
 //ˇ
 let callback = {
-    anyting: function (err, res) { }
+    anyting: function(err, res) { }
 }
 
 
-describe("Handler", function () {
+describe("Handler", function() {
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
     })
 
-    it('can instantiate class with params', function () {
+    it('can instantiate class with params', function() {
         expect(o).toBeDefined();
         expect(o.context).toBeDefined();
         expect(o.event).toBeDefined();
@@ -56,39 +56,39 @@ describe("Handler", function () {
         expect(o.event.source).toMatch(event.source);
     })
 
-    it('can set the source', function (done) {
+    it('can set the source', function(done) {
         o.setSource().
-            then(function (res) {
+            then(function(res) {
                 expect(res).toBeDefined();
                 expect(res).toMatch(event.source);
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
     })
 
-    it('can set the table', function (done) {
+    it('can set the table', function(done) {
         o.setTable().
-            then(function (res) {
+            then(function(res) {
                 expect(res).toBeDefined();
                 expect(res).toMatch(event.table);
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
     })
 
-    it('can set the schema', function (done) {
+    it('can set the schema', function(done) {
         o.getSchema().
-            then(function (res) {
+            then(function(res) {
                 expect(res).toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
@@ -96,16 +96,16 @@ describe("Handler", function () {
 })
 
 
-describe("data from body", function () {
+describe("data from body", function() {
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
         delete o.source;
     })
 
-    it('can get the data from body', function (done) {
+    it('can get the data from body', function(done) {
         o.getData()
-            .then(function (res) {
+            .then(function(res) {
                 expect(res).toBeDefined();
                 expect(res[0].uuid).toBeDefined();
                 expect(res[0].uuid).toMatch(event.body[0].uuid);
@@ -113,24 +113,24 @@ describe("data from body", function () {
                 expect(res[1].uuid).toMatch(event.body[1].uuid);
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
     })
 })
 
-describe("data from file", function () {
+describe("data from file", function() {
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
     })
 
 
-    it('can get the data from file', function (done) {
+    it('can get the data from file', function(done) {
 
         o.getData()
-            .then(function (res) {
+            .then(function(res) {
                 expect(res).toBeDefined();
                 expect(res[0].uuid).toBeDefined();
                 expect(res[0].uuid).toMatch(event.body[0].uuid);
@@ -138,55 +138,53 @@ describe("data from file", function () {
                 expect(res[1].uuid).toMatch(event.body[1].uuid);
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
     })
 })
 
-describe('can mock the client', function () {
+describe('can mock the client', function() {
 
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
         spyOn(o, 'getClient').and.callThrough();
 
     })
 
 
-    it('can mock the client', function () {
+    it('can mock the client', function() {
         let client = o.getClient();
         expect(o.getClient).toHaveBeenCalled();
         expect(client).toBeTruthy();
     })
 })
 
-describe('can run', function () {
+xdescribe('can run', function() {
 
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
-        spyOn(o, 'getClient').and.callThrough();
-
     })
 
 
-    it('can import', function () {
+    it('can import', function() {
         o.run();
-
+        expect(o.responseSuccess).toBeDefined();
     })
 })
 
-describe('callbacks', function () {
+describe('callbacks', function() {
 
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
     })
 
 
-    it('success', function () {
+    it('success', function() {
         o.successCallback({
             "good": "job"
         });
@@ -197,7 +195,7 @@ describe('callbacks', function () {
 
     })
 
-    it('error', function () {
+    it('error', function() {
         o.errorCallback({
             "bad": "job"
         });
@@ -211,87 +209,87 @@ describe('callbacks', function () {
 })
 
 
-describe('negative tests', function () {
+describe('negative tests', function() {
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
     })
 
-    it('cannot set the source', function (done) {
+    it('cannot set the source', function(done) {
         delete o.event.source;
         o.setSource().
-            then(function (res) {
+            then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).toBeDefined();
                 done();
             })
     })
 
-    it('cannot set the table', function (done) {
+    it('cannot set the table', function(done) {
         delete o.event.table;
         o.setTable().
-            then(function (res) {
+            then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).toBeDefined();
                 done();
             })
     })
 
-    it('cannot set the schema', function (done) {
+    it('cannot set the schema', function(done) {
         delete o.event.schema;
         o.getSchema().
-            then(function (res) {
+            then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).toBeDefined();
                 done();
             })
     })
 
-    it('cannot set the schema body', function (done) {
+    it('cannot set the schema body', function(done) {
         o.event.schema = 'dp.schema.empty.json';
         o.getSchema().
-            then(function (res) {
+            then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).toBeDefined();
                 done();
             })
     })
 
 
-    it('cannot get the data from body', function (done) {
+    it('cannot get the data from body', function(done) {
         delete o.event.body;
         o.getData().
-            then(function (res) {
+            then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).toBeDefined();
                 done();
             })
     })
 })
 
-describe('Validate', function () {
+describe('Validate', function() {
 
     let o;
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
     })
 
-    it('can validate', function (done) {
+    it('can validate', function(done) {
         let fs = require('fs');
         let data = {
             "uuid": "54cf99a7-3eb4-4ab8-9e1c-3cc650b485ae",
@@ -299,20 +297,20 @@ describe('Validate', function () {
             "title": "Griffin"
         };
         let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
-        let schema = JSON.parse(file);
+        o.schema = JSON.parse(file);
 
-        o.validate(data, schema)
-            .then(function (res) {
+        o.validate(data)
+            .then(function(res) {
                 expect(res).toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
                 expect(err).not.toBeDefined();
                 done();
             })
     })
 
-    it('cannnot validate', function (done) {
+    it('cannnot validate', function(done) {
         let fs = require('fs');
         let data = {
             "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
@@ -321,12 +319,13 @@ describe('Validate', function () {
         let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
         let schema = JSON.parse(file);
 
-        o.validate(data, schema)
-            .then(function (res) {
+       o.validate(data, schema)
+            .then(function(res) {
                 expect(res).not.toBeDefined();
                 done();
             })
-            .catch(function (err) {
+            .catch(function(err) {
+                //   console.log(err);
                 expect(err).toBeDefined();
                 done();
             })
@@ -334,58 +333,94 @@ describe('Validate', function () {
 })
 
 
-describe('Map', function () {
+describe('Create', function() {
 
     let o;
     let fs = require('fs');
 
-    beforeEach(function () {
+    beforeEach(function() {
         o = new handler(event, context, callback);
-        let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
-        o.schema = JSON.parse(file);
-    })
-
-    it('can map', function () {
-        let data = [{
-            "uuid": "54cf99a7-3eb4-4ab8-9e1c-3cc650b485ae",
-            "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
-            "title": "Griffin"
-        },
-        {
-            "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
-            "title": "Richardson"
-        }];
-
-        let mapped = o.map(data);
-        expect(mapped).toBeDefined();
-    })
-})
-
-
-describe('Create', function () {
-
-    let o;
-    let fs = require('fs');
-
-    beforeEach(function () {
-        o = new handler(event, context, callback);
-        console.log(o.event);
         let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
         o.schema = JSON.parse(file);
         o.data = [{
-            "uuid": "54cf99a7-3eb4-4ab8-9e1c-3cc650b485ae",
+            "uuid": "4B626EE5-F473-487B-B33F-3363C06EF531",
             "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
-            "title": "Griffin"
+            "title": "Melanon"
         },
         {
-            "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
+            "uuid": "F9DD3E7B-98E9-4BD0-B6F6-AF8D425EA982",
             "title": "Richardson"
         }];
         o.table = "testone";
     })
 
-    it('can create', function () {
+    it('can create', function(done) {
         // console.log(o);
-        o.create();
+        o.create()
+            .then(function(res) {
+                expect(res).toBeDefined();
+                done();
+            })
+            .catch(function(err) {
+                 console.log(err);
+                expect(err).not.toBeDefined();
+                done();
+            })
+    })
+})
+
+
+
+describe('Write', function() {
+
+    let o;
+    let fs = require('fs');
+
+    beforeEach(function() {
+        o = new handler(event, context, callback);
+        let file = fs.readFileSync(process.cwd() + "/sample.schema.json");
+        o.schema = JSON.parse(file);
+        o.data = [{
+            "uuid": "4B626EE5-F473-487B-B33F-3363C06EF531",
+            "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
+            "title": "Melanon Niceness"
+        },
+        {
+            "uuid": "F9DD3E7B-98E9-4BD0-B6F6-AF8D425EA982",
+            "title": "Richardson"
+        }];
+        o.table = "testone";
+
+
+    })
+
+    it('can write', function(done) {
+        let data = o.data[0];
+        o.write(data)
+            .then(function(res) {
+                expect(res).toBeDefined();
+                done();
+            })
+            .catch(function(err) {
+                expect(err).not.toBeDefined();
+                done();
+            })
+    })
+
+     it('cannot write', function(done) {
+        let data = {
+            "uuid": "F9DD3E7B-98E9-4BD0-B6F6-AF8D425EA982",
+            "jessue": "Richardson"
+        };
+        o.write(data)
+            .then(function(res) {
+                expect(res).not.toBeDefined();
+                done();
+            })
+            .catch(function(err) {
+                expect(err).toBeDefined();
+                expect(err).toMatch('ValidationException: One of the required keys was not given a value');
+                done();
+            })
     })
 })
