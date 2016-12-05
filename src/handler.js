@@ -29,7 +29,7 @@ class Importer {
         let AWS = require('aws-sdk')
         AWS.config.update({
             region: "eu-west-1",
-            // endpoint: "http://localhost:8044"
+            endpoint: "http://localhost:8044"
         });
 
         return new AWS.DynamoDB.DocumentClient();
@@ -41,6 +41,7 @@ class Importer {
      * @return {<Promise>}  description
      */
     setSource() {
+        console.log('...in setSource');
         return (typeof this.event.source === 'undefined') ? Promise.reject('No source set') : Promise.resolve(this.source = this.event.source);
     }
 
@@ -52,6 +53,7 @@ class Importer {
      * @memberOf Importer
      */
     setTable() {
+        console.log('...in setTable');
         return (typeof this.event.table === 'undefined') ? Promise.reject('No table set') : Promise.resolve(this.table = this.event.table);
     }
 
@@ -63,7 +65,7 @@ class Importer {
      * @return {type}  description
      */
     getSchema() {
-
+        console.log('...in getSchema');
         let that = this;
         let fs = require('fs');
         return new Promise(function (resolve, reject) {
@@ -79,20 +81,23 @@ class Importer {
         })
     }
 
-    
+
     /**
      * getData - retrieves the data from the source if it's a file or from the event.body
      *
      * @return {type}  description
      */
     getData() {
+
+        console.log('...in getData');
+        // console.trace();
         let that = this;
-         let fs = require('fs');
-           
-           return new Promise(function (resolve, reject) {
+        let fs = require('fs');
+
+        return new Promise(function (resolve, reject) {
             if (typeof that.source === 'undefined') {
-             reject('the source is not set');
-            }   
+                reject('the source is not set');
+            }
             try {
                 resolve(that.data = JSON.parse(fs.readFileSync(that.source)));
             }
@@ -110,6 +115,8 @@ class Importer {
      * @return {type}        description
      */
     validate(data) {
+                console.log('...in validate');
+
         let quintus = this;
         let validator = require('json-schema-remote');
         return new Promise(function (resolve, reject) {
@@ -130,6 +137,7 @@ class Importer {
      * @return {type}  description
      */
     create() {
+        console.log('...in create');
 
         let validated = this.data.map(this.validate, this);
         return Promise.all(validated);
@@ -145,6 +153,10 @@ class Importer {
      * @return {promise}      promise results or error
      */
     write(data) {
+
+                console.log('...in write');
+                console.log(data);
+                data.updatedAt = new Date();
         let lucilla = this;
         let params = {
             TableName: this.table,
@@ -211,15 +223,18 @@ class Importer {
      */
     render() {
         // let quintus = this;
-        console.log('in render');
+        console.log('...in render');
         this.setSource()
-            .then(this.setTable)
-            .then(this.getSchema)
-            .then(this.getData)
-            .then(this.create)
-            .then(this.write)
-            .then(this.successCallback)
-            .catch(this.errorCallback)
+            .then(this.setTable())
+            .then(this.getSchema())
+            .then(this.getData())
+            .then(this.create())
+            .then(function(res){
+                console.log(res);
+                return this.write();
+            })
+            .then(this.successCallback())
+            .catch(this.errorCallback())
     }
 }
 

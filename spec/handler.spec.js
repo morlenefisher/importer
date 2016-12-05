@@ -29,14 +29,8 @@ let callback = {
     anyting: function (err, res) { }
 }
 
-describe("handler export", function(){
-    handler.import(event, context, callback);
-    
-})
-
 describe("Handler", function () {
     let o;
-
 
     beforeEach(function () {
         o = new handler(event, context, callback);
@@ -47,6 +41,10 @@ describe("Handler", function () {
         o.event.table = "testone";
 
     })
+
+// describe("handler export", function(){
+//     handler.import(event, context, callback);
+// })
 
     it('can instantiate class with params', function () {
         expect(o).toBeDefined();
@@ -488,33 +486,11 @@ describe("Handler", function () {
 
         describe('Run', function () {
 
-            let o;
-
-            // let event = {
-            //     "body": [{
-            //         "uuid": "54cf99a7-3eb4-4ab8-9e1c-3cc650b485ae",
-            //         "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
-            //         "title": "Griffin"
-            //     },
-            //     {
-            //         "uuid": "5289cc67-dfc2-41a4-a5b0-25091037cc60",
-            //         "title": "Richardson"
-            //     }],
-            //     "destination": "db",
-            //     "source": "sample.json",
-            //     "table": "testone",
-            //     "location": "local",
-            //     "schema": "dp.schema.json"
-            // }
-            beforeEach(function () {
-                o = new handler(event, context, callback);
-            })
-
             it('can get response', function (done) {
                 o.render();
                 expect(o.responseSuccess).toBeDefined();
                 done();
             })
-        })
+        }) // Run
     })
 })
