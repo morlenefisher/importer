@@ -18,6 +18,7 @@ provider:
   runtime: nodejs4.3
   region: eu-west-1
   stage: dev
+  description: Imports json data into Lambda Table
   apiKeys:
     - mySecretKey
 
@@ -33,19 +34,24 @@ provider:
 custom:
     myStage: ${opt:stage, self:provider.stage}
 
-exclude:
-   - exclude-me.py
-   - exclude-me-dir/**
+package:
+  exclude:
+    - coverage/**
+    - spec/**
+    - lib/**
+    - conf.json
+    - .gitignore
+    - .istanbul.yml
+    - .travis.yml
 
 functions:
-  create:
-    handler: handler.create
+  import:
+    handler: src/handler.importer
 
 resources:
   Resources:
     importerDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
           -
@@ -62,7 +68,7 @@ resources:
           WriteCapacityUnits: 1
         TableName: 'imported'
 
-   S3BucketForConvertedFiles:
-     Type: AWS::S3::Bucket
-     Properties:
-       BucketName: ngest-csv2json-${opt:stage)-
+    s3BucketForFiles:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:service}-ngest-csv2json

@@ -39,3 +39,4 @@ jspm_packages
 # documentation
 docs
 .vscode
+.serverless

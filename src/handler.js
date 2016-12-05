@@ -14,63 +14,48 @@ class Importer {
      * @param  {function} callback description
      * @return {void}
      */
-
     constructor(event, context, callback) {
         this.event = event;
         this.context = context;
         this.callback = callback;
     }
 
-
     /**
-     * setSource - The source is the souce of the data
-     *
-     * @return {type}  description
-     */
-    setSource() {
-        let that = this;
-
-        return new Promise(function(resolve, reject) {
-            if (typeof that.event.source === 'undefined') {
-                reject('there is no source');
-            }
-
-            resolve(that.source = that.event.source);
-        })
-
-    }
-
-    /**
-     * setTable - Sets the name of the data table
-     *
-     * @return {type}  description
-     */
-    setTable() {
-        let that = this;
-        return new Promise(function(resolve, reject) {
-            if (typeof that.event.table === 'undefined') {
-                reject('there is no table');
-            }
-
-            resolve(that.table = that.event.table);
-        })
-    }
-
-    /**
-     * getSQSHandler - description
-     *
-     * @return {type}  description
-     */
+        * getSQSHandler - description
+        *
+        * @return {type}  description
+        */
     getClient() {
         let AWS = require('aws-sdk')
         AWS.config.update({
             region: "eu-west-1",
-            endpoint: "http://localhost:8044"
+            // endpoint: "http://localhost:8044"
         });
 
         return new AWS.DynamoDB.DocumentClient();
-
     }
+
+    /**
+     * setSource - The source is the souce of the data
+     *
+     * @return {<Promise>}  description
+     */
+    setSource() {
+        return (typeof this.event.source === 'undefined') ? Promise.reject('No source set') : Promise.resolve(this.source = this.event.source);
+    }
+
+    /**
+     * setTable - Sets the name of the data table
+     * 
+     * @returns <Promise>
+     * 
+     * @memberOf Importer
+     */
+    setTable() {
+        return (typeof this.event.table === 'undefined') ? Promise.reject('No table set') : Promise.resolve(this.table = this.event.table);
+    }
+
+
 
     /**
      * getSchema - description
@@ -78,23 +63,23 @@ class Importer {
      * @return {type}  description
      */
     getSchema() {
+
         let that = this;
         let fs = require('fs');
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             if (typeof that.event.schema === 'undefined') {
                 reject('there is no schema');
             }
-
-            let file = fs.readFileSync(process.cwd() + "/" + that.event.schema);
-            if (typeof file === 'undefined') {
+            try {
+                resolve(that.schema = JSON.parse(fs.readFileSync(that.event.schema)));
+            }
+            catch (err) {
                 reject('Cannot read the schema file');
-            } else {
-                resolve(that.schema = JSON.parse(file));
             }
         })
     }
 
-
+    
     /**
      * getData - retrieves the data from the source if it's a file or from the event.body
      *
@@ -102,24 +87,18 @@ class Importer {
      */
     getData() {
         let that = this;
-        return new Promise(function(resolve, reject) {
-            if (typeof that.source !== 'undefined') {
-                let fs = require('fs');
-                let file = fs.readFileSync(process.cwd() + '/' + that.source);
-                if (typeof file === 'undefined') {
-                    reject(new Error('Cannot find the data file'));
-                }
-                resolve(that.data = JSON.parse(file));
+         let fs = require('fs');
+           
+           return new Promise(function (resolve, reject) {
+            if (typeof that.source === 'undefined') {
+             reject('the source is not set');
+            }   
+            try {
+                resolve(that.data = JSON.parse(fs.readFileSync(that.source)));
             }
-            else {
-
-                if (typeof that.event.body === 'undefined') {
-                    reject('there is no body');
-                }
-
-                resolve(that.data = that.event.body);
+            catch (err) {
+                reject('Cannot read the source file');
             }
-
         })
     }
 
@@ -133,12 +112,12 @@ class Importer {
     validate(data) {
         let quintus = this;
         let validator = require('json-schema-remote');
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             validator.validate(data, quintus.schema)
-                .then(function(res) {
+                .then(function () {
                     resolve(data);
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                     reject(error);
                 });
         })
@@ -171,14 +150,15 @@ class Importer {
             TableName: this.table,
             Item: data
         };
+        // console.trace();
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
             // console.log("Adding a new item to " + params.TableName);
-             lucilla.getClient().put(params).promise()
-                .then(function(data) {
+            lucilla.getClient().put(params).promise()
+                .then(function (data) {
                     resolve(data);
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     reject(err);
                 })
         })
@@ -210,6 +190,7 @@ class Importer {
      * @return {type}  description
      */
     successCallback(result) {
+
         this.responseSuccess = {
             statusCode: 200,
             headers: {
@@ -222,12 +203,19 @@ class Importer {
 
     }
 
-    run() {
+    /**
+     * Gets the process running
+     * 
+     * 
+     * @memberOf Importer
+     */
+    render() {
+        // let quintus = this;
+        console.log('in render');
         this.setSource()
             .then(this.setTable)
             .then(this.getSchema)
             .then(this.getData)
-
             .then(this.create)
             .then(this.write)
             .then(this.successCallback)
@@ -236,7 +224,8 @@ class Importer {
 }
 
 module.exports = Importer;
-module.exports.importer = (event, context, callback) => {
-    let doIt = new Importer(event, context);
-    doIt.run();
+module.exports.import = (event, context, callback) => {
+    let doIt = new Importer(event, context, callback);
+    doIt.render();
+
 };
