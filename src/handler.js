@@ -89,7 +89,6 @@ class Importer {
     getData() {
 
         console.log('...in getData');
-        // console.trace();
         let that = this;
         let fs = require('fs');
 
@@ -120,6 +119,7 @@ class Importer {
         return new Promise(function (resolve, reject) {
             validator.validate(data, quintus.schema)
                 .then(function () {
+                    console.log('validate then callback...');
                     resolve(data);
                 })
                 .catch(function (error) {
@@ -136,10 +136,7 @@ class Importer {
      */
     create() {
         console.log('...in create');
-
-        let validated = this.data.map(this.validate, this);
-        return Promise.all(validated);
-
+        return Promise.all(this.data.map(this.validate, this));
     }
 
 
@@ -152,27 +149,32 @@ class Importer {
      */
     write(data) {
 
-            console.log('...in write');
-            data.updatedAt = new Date();
+        console.log('...in write');
 
-            let lucilla = this;
-            let params = {
-                TableName: this.table,
-                Item: data
-            };
+        let lucilla = this;
+        let params = {
+            TableName: this.table,
+            Item: data,
+            ReturnValues: 'ALL_OLD', // optional (NONE | ALL_OLD)
+            ReturnConsumedCapacity: 'TOTAL', // optional (NONE | TOTAL | INDEXES)
+            ReturnItemCollectionMetrics: 'SIZE', // optional (NONE | SIZE)
+        };
 
-            return new Promise(function (resolve, reject) {
-                // console.log("Adding a new item to " + params.TableName);
-                lucilla.getClient().put(params).promise()
-                    .then(function (data) {
-                        resolve(data);
-                    })
-                    .catch(function (err) {
-                        reject(err);
-                    })
-            })
+        return new Promise(function (resolve, reject) {
+            // console.log("Adding a new item to " + params.TableName);
+            lucilla.getClient().put(params).promise()
+                .then(function (data) {
+                    // console.log(' DynamoDB then callback');
+                    // console.log(data);
+                    // console.log('DynamoDB end then callback');
+                    resolve(data);
+                })
+                .catch(function (err) {
+                    reject(err);
+                })
+        })
 
-        } // write
+    } // write
 
 
 
@@ -189,7 +191,7 @@ class Importer {
             },
             body: JSON.stringify(err),
         }
-        this.context.fail(this.responseError);
+        return this.callback(this.responseError);
 
     }
 
@@ -199,7 +201,7 @@ class Importer {
      * @return {type}  description
      */
     successCallback(result) {
-
+        console.log('...in success callback');
         this.responseSuccess = {
             statusCode: 200,
             headers: {
@@ -208,7 +210,7 @@ class Importer {
             body: JSON.stringify(result),
         };
 
-        this.context.succeed(this.responseSuccess);
+        return this.callback(null, this.responseSuccess);
 
     }
 
@@ -219,19 +221,24 @@ class Importer {
      * @memberOf Importer
      */
     render() {
-        // let quintus = this;
+        let quintus = this;
         console.log('...in render');
-        this.setSource()
+        return this.setSource()
             .then(this.setTable())
             .then(this.getSchema())
             .then(this.getData())
-            .then(this.create())
-            .then(function (res) {
-                console.log(res);
-                return this.write();
+            .then(function () {
+                return quintus.create();
             })
-            .then(this.successCallback())
-            .catch(this.errorCallback())
+            .then(function (res) {
+                return Promise.all(res.map(quintus.write, quintus));
+            })
+            .then(function (success) {
+                return quintus.successCallback(success);
+            })
+            .catch(function (err) {
+                return quintus.errorCallback(err)
+            })
     }
 }
 

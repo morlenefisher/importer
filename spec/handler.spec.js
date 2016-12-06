@@ -22,21 +22,22 @@ let event = {
 
 //
 let context = {
-        fail: function (msg) {
-            // console.log(msg);
-            expect(msg).toBeDefined();
-        },
-        succeed: function (data) {
-            // console.log(data);
-            expect(data).toBeDefined();
-            expect(data.statusCode).toBeDefined();
-            expect(data.statusCode).toEqual(200);
-        }
+    fail: function (msg) {
+        // console.log(msg);
+        expect(msg).toBeDefined();
+    },
+    succeed: function (data) {
+        // console.log(data);
+        expect(data).toBeDefined();
+        expect(data.statusCode).toBeDefined();
+        expect(data.statusCode).toEqual(200);
     }
-    //ˇ
-let callback = {
-    anyting: function (err, res) {}
 }
+//ˇ
+let callback = function(err, res) { return this }
+// let callback = {
+//     anyting: function (err, res) { }
+// }
 
 let $getClientMock = {
     put: function (data) {
@@ -82,7 +83,7 @@ describe("Handler", function () {
 
         expect(o.event.destination).toMatch(event.destination);
         expect(typeof o.context).toMatch('object');
-        expect(typeof o.callback).toMatch('object');
+        expect(typeof o.callback).toMatch('function');
 
         expect(o.event.source).toMatch(event.source);
         expect(o.setSource).toBeDefined();
@@ -175,7 +176,7 @@ describe("Handler", function () {
             it('cannot set the source', function (done) {
                 delete o.event.source;
                 o.setSource().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -192,7 +193,7 @@ describe("Handler", function () {
 
             it('can set the table', function (done) {
                 o.setTable().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).toBeDefined();
                         expect(res).toMatch(event.table);
                         expect(o.table).toMatch(event.table);
@@ -209,7 +210,7 @@ describe("Handler", function () {
             it('cannot set the table', function (done) {
                 delete o.event.table;
                 o.setTable().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -249,7 +250,7 @@ describe("Handler", function () {
 
             it('can set the schema', function (done) {
                 o.getSchema().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).toBeDefined();
                         done();
                     })
@@ -262,7 +263,7 @@ describe("Handler", function () {
             it('cannot set the schema', function (done) {
                 delete o.event.schema;
                 o.getSchema().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -276,7 +277,7 @@ describe("Handler", function () {
                 o.event.schema = process.cwd() + '/spec/samples/dp.schema.empty.json';
                 // fs.chmod(process.cwd() + '/spec/samples/dp.schema.empty.json', '400');
                 o.getSchema().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -354,7 +355,7 @@ describe("Handler", function () {
 
             it('cannot get the data from body', function (done) {
                 o.getData().
-                then(function (res) {
+                    then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -508,11 +509,14 @@ describe("Handler", function () {
 
         describe('Run', function () {
 
-                it('can get response', function (done) {
-                    o.render();
-                    expect(o.responseSuccess).toBeDefined();
-                    done();
-                })
-            }) // Run
+            it('can get response', function (done) {
+                // let runner = o.render();
+                console.log(jasmine.DEFAULT_TIMEOUT_INTERVAL);
+                expect(o.render()).toBeDefined();
+                // done();
+
+
+            }, 30000)
+        }) // Run
     })
 })
