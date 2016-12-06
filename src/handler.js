@@ -21,10 +21,10 @@ class Importer {
     }
 
     /**
-        * getSQSHandler - description
-        *
-        * @return {type}  description
-        */
+     * getSQSHandler - description
+     *
+     * @return {type}  description
+     */
     getClient() {
         let AWS = require('aws-sdk')
         AWS.config.update({
@@ -74,8 +74,7 @@ class Importer {
             }
             try {
                 resolve(that.schema = JSON.parse(fs.readFileSync(that.event.schema)));
-            }
-            catch (err) {
+            } catch (err) {
                 reject('Cannot read the schema file');
             }
         })
@@ -100,8 +99,7 @@ class Importer {
             }
             try {
                 resolve(that.data = JSON.parse(fs.readFileSync(that.source)));
-            }
-            catch (err) {
+            } catch (err) {
                 reject('Cannot read the source file');
             }
         })
@@ -115,7 +113,7 @@ class Importer {
      * @return {type}        description
      */
     validate(data) {
-                console.log('...in validate');
+        console.log('...in validate');
 
         let quintus = this;
         let validator = require('json-schema-remote');
@@ -154,28 +152,27 @@ class Importer {
      */
     write(data) {
 
-                console.log('...in write');
-                console.log(data);
-                data.updatedAt = new Date();
-        let lucilla = this;
-        let params = {
-            TableName: this.table,
-            Item: data
-        };
-        // console.trace();
+            console.log('...in write');
+            data.updatedAt = new Date();
 
-        return new Promise(function (resolve, reject) {
-            // console.log("Adding a new item to " + params.TableName);
-            lucilla.getClient().put(params).promise()
-                .then(function (data) {
-                    resolve(data);
-                })
-                .catch(function (err) {
-                    reject(err);
-                })
-        })
+            let lucilla = this;
+            let params = {
+                TableName: this.table,
+                Item: data
+            };
 
-    } // write
+            return new Promise(function (resolve, reject) {
+                // console.log("Adding a new item to " + params.TableName);
+                lucilla.getClient().put(params).promise()
+                    .then(function (data) {
+                        resolve(data);
+                    })
+                    .catch(function (err) {
+                        reject(err);
+                    })
+            })
+
+        } // write
 
 
 
@@ -229,7 +226,7 @@ class Importer {
             .then(this.getSchema())
             .then(this.getData())
             .then(this.create())
-            .then(function(res){
+            .then(function (res) {
                 console.log(res);
                 return this.write();
             })

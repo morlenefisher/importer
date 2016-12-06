@@ -3,6 +3,15 @@
 const handler = require(process.cwd() + '/src/handler');
 const fs = require('fs');
 
+// custom error object for write neg test validation error
+// this should probs go in a helpr
+function ValidationException(message) {
+    this.name = "ValidationException";
+    this.message = (message || "");
+}
+ValidationException.prototype = Error.prototype;
+
+
 let event = {
     "destination": "db",
     "source": process.cwd() + "/spec/samples/sample.event.json",
@@ -13,21 +22,40 @@ let event = {
 
 //
 let context = {
-    fail: function (msg) {
-        // console.log(msg);
-        expect(msg).toBeDefined();
-    },
-    succeed: function (data) {
-        // console.log(data);
-        expect(data).toBeDefined();
-        expect(data.statusCode).toBeDefined();
-        expect(data.statusCode).toEqual(200);
+        fail: function (msg) {
+            // console.log(msg);
+            expect(msg).toBeDefined();
+        },
+        succeed: function (data) {
+            // console.log(data);
+            expect(data).toBeDefined();
+            expect(data.statusCode).toBeDefined();
+            expect(data.statusCode).toEqual(200);
+        }
     }
-}
-//ˇ
+    //ˇ
 let callback = {
-    anyting: function (err, res) { }
+    anyting: function (err, res) {}
 }
+
+let $getClientMock = {
+    put: function (data) {
+        this.data = data;
+        return $getClientMock;
+    },
+    promise: function () {
+        try {
+            if (typeof this.data === 'object' && typeof this.data.Item.title === 'undefined') {
+                throw new ValidationException('One of the required keys was not given a value');
+            }
+        } catch (err) {
+            return Promise.reject(err);
+
+        }
+        return Promise.resolve('recorded written')
+
+    }
+};
 
 describe("Handler", function () {
     let o;
@@ -42,9 +70,9 @@ describe("Handler", function () {
 
     })
 
-// describe("handler export", function(){
-//     handler.import(event, context, callback);
-// })
+    // describe("handler export", function(){
+    //     handler.import(event, context, callback);
+    // })
 
     it('can instantiate class with params', function () {
         expect(o).toBeDefined();
@@ -147,7 +175,7 @@ describe("Handler", function () {
             it('cannot set the source', function (done) {
                 delete o.event.source;
                 o.setSource().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -164,7 +192,7 @@ describe("Handler", function () {
 
             it('can set the table', function (done) {
                 o.setTable().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).toBeDefined();
                         expect(res).toMatch(event.table);
                         expect(o.table).toMatch(event.table);
@@ -181,7 +209,7 @@ describe("Handler", function () {
             it('cannot set the table', function (done) {
                 delete o.event.table;
                 o.setTable().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -221,7 +249,7 @@ describe("Handler", function () {
 
             it('can set the schema', function (done) {
                 o.getSchema().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).toBeDefined();
                         done();
                     })
@@ -234,7 +262,7 @@ describe("Handler", function () {
             it('cannot set the schema', function (done) {
                 delete o.event.schema;
                 o.getSchema().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -248,7 +276,7 @@ describe("Handler", function () {
                 o.event.schema = process.cwd() + '/spec/samples/dp.schema.empty.json';
                 // fs.chmod(process.cwd() + '/spec/samples/dp.schema.empty.json', '400');
                 o.getSchema().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -324,9 +352,9 @@ describe("Handler", function () {
                     })
             })
 
-             it('cannot get the data from body', function (done) {
+            it('cannot get the data from body', function (done) {
                 o.getData().
-                    then(function (res) {
+                then(function (res) {
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -402,8 +430,7 @@ describe("Handler", function () {
                     "uuid": "4B626EE5-F473-487B-B33F-3363C06EF531",
                     "owner": "45c0199c-26ac-4646-ab6d-a3d55eb0f2d6",
                     "title": "Melanon"
-                },
-                {
+                }, {
                     "uuid": "F9DD3E7B-98E9-4BD0-B6F6-AF8D425EA982",
                     "title": "Richardson"
                 }];
@@ -437,13 +464,8 @@ describe("Handler", function () {
                 let file = fs.readFileSync(process.cwd() + "/spec/samples/sample.schema.json");
                 o.schema = JSON.parse(file);
                 o.table = "testone";
-                let AWS = require('mock-aws');
-                AWS.config.update({
-                    region: "eu-west-1",
-                    endpoint: "http://localhost:8044"
-                });
-                let dynamodb = new AWS.DynamoDB.DocumentClient();
-                spyOn(o, 'getClient').and.returnValue(dynamodb);
+
+                spyOn(o, 'getClient').and.returnValue($getClientMock);
 
 
             })
@@ -471,7 +493,7 @@ describe("Handler", function () {
                 };
                 o.write(data)
                     .then(function (res) {
-                        expect(o.getClient).toHaveBeenCalledTimes(2);
+                        expect(o.getClient).toHaveBeenCalledTimes(1);
                         expect(res).not.toBeDefined();
                         done();
                     })
@@ -486,11 +508,11 @@ describe("Handler", function () {
 
         describe('Run', function () {
 
-            it('can get response', function (done) {
-                o.render();
-                expect(o.responseSuccess).toBeDefined();
-                done();
-            })
-        }) // Run
+                it('can get response', function (done) {
+                    o.render();
+                    expect(o.responseSuccess).toBeDefined();
+                    done();
+                })
+            }) // Run
     })
 })
