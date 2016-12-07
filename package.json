@@ -1,6 +1,6 @@
 {
   "name": "digitalxlabs-importer",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Import data from json source to dynamodb",
   "repository": {
     "type": "git",
