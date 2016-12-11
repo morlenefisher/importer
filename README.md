@@ -1,6 +1,56 @@
-# digitalxlabs-importer [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer) [![CircleCI](https://circleci.com/gh/digitalXlabs/importer/tree/master.svg?style=shield)](https://circleci.com/gh/digitalXlabs/importer/tree/master)
+# ngest-csv2json [![Build Status](https://travis-ci.org/digitalXlabs/importer.png?branch=master)](https://travis-ci.org/digitalXlabs/importer) [![CircleCI](https://circleci.com/gh/digitalXlabs/importer/tree/master.svg?style=shield)](https://circleci.com/gh/digitalXlabs/importer/tree/master)
 
 Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) using [AWS Lambda](https://aws.amazon.com/lambda), and [Serverless](https://serverless.com/)
+
+## Install (Quickie)
+
+```
+git clone git@github.com:digitalXlabs/importer.git
+npm install ngest-importer
+```
+
+
+## Usage
+
+### Use case 1
+
+Convert a local CSV data file to JSON using a JSON Schema document to determine 
+the property names of the json object, using the command line tool
+
+### Command line Usage
+
+```
+npm install ngest-importer -g
+
+Usage: convert [options] <file>
+
+  Options:
+
+    -h, --help                          output usage information
+    -i, --input <datafilepath>          The input csv data file
+    -s, --schema <schemafilepath>       The JSON schema file path
+    -d, --destination <outputfilepath>  The output file path
+    -u, --upload <s3bucket>             The name of the s3 bucket to upload the file
+```
+
+
+```
+convert -i example.csv -s example.schema.json -d example.json
+```
+You will have the converted JSON data file at the location you chose.
+
+### Use case 2
+
+Convert a local CSV data file to JSON using a JSON Schema document to determine 
+the property names of the json object and upload the file to an AWS S3 bucket
+
+You will need to ensure your AWS Profile has been set in your bash. The profile being read
+is taken from your ~/.aws/credentials file.
+
+```
+export AWS_PROFILE=my_aws_profile
+convert -i example.csv -s example.schema.json -d example.json -u my_awss3_bucket
+```
 
 ## Files
  - handler.js: Contains the class and module to do the importing
@@ -19,13 +69,6 @@ Import data from json source to [AWS dynamodb](https://aws.amazon.com/dynamodb) 
  - You will need to create the table that is to store the data
  - Serverless will need to be installed on your machine, if you want to use it's awesome features.
  - AWS access key and secret (generate this is the IAM service section and use this with serverless to deploy the code)
-
-## Install (Quickie)
-
-- `npm install -g serverless` (if you don't already have it installed)
-- `git clone git@github.com:digitalXlabs/importer.git`
-- `npm install --production`
-- `serverless deploy`
 
 
 ## Tests
